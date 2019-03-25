@@ -1,0 +1,7 @@
+-google검색창에 image distance python
+
+https://www.youtube.com/watch?v=NzQDkQ6odK8
+https://stackoverflow.com/questions/51509808/how-to-measure-distances-in-a-image-with-python
+https://www.pyimagesearch.com/2014/09/15/python-compare-two-images/
+https://gist.github.com/duhaime/211365edaddf7ff89c0a36d9f3f7956c
+hausdorff => https://github.com/mavillan/py-hausdorff

@@ -1,0 +1,3 @@
+https://github.com/JohannesBuchner/imagehash/issues/53
+https://pypi.org/project/ImageHash/
+https://github.com/JohannesBuchner/imagehash
