@@ -53,25 +53,47 @@ options.add_argument('disable-gpu')
 
 driver = webdriver.Chrome(driver_path, chrome_options=options)
 
-r = requests.get("https://www.wooribank.com")
+r = requests.get("https://www.wooribank.com/")
 c = r.content
 soup = BeautifulSoup(c, "html.parser")
 
-link_1 = soup.find("div", {"class":"coll_cont"})
-link_2 = link_1.find("ul", {"id":"newsResultUL"})
-link_3 = link_2.findAll("div", {"class":"wrap_cont"}) #한 페이지에 뜨는 기사 10개
+# link_1 = soup.find("div", {"class":"coll_cont"})
+# link_2 = link_1.find("ul", {"id":"newsResultUL"})
+# link_3 = link_2.findAll("div", {"class":"wrap_cont"}) #한 페이지에 뜨는 기사 10개
+#print(soup)
+#print("---------------------------------------------------------------------------")
+#print(soup.findAll("a"))
+link = soup.findAll("a")
+for item in link:
+    #print(item.get("href"))
+    site_link.append(item.get("href"))
 
-for item in link_3:
-    print(item.find("a").get("href"))
-    site_link.append(item.find("a").get("href"))
-for cnt in range(len(site_link)):
+httplink=[]
+strangelink=[]
+for link in site_link:
+    if 'http' in link:
+        httplink.append(link)
+    else:
+        strangelink.append(link)
+httplink[0] = 'https://www.wooribank.com/'
+print(httplink)
+print(strangelink)
+
+for cnt in range(len(httplink)):
     count.append(cnt)
 
-for to in zip(count,site_link):
+for to in zip(count,httplink):
     total.append(to)
+print(total)
 
-for run in range(len(site_link)):
+for run in range(len(httplink)):
     driver.get(total[run][1])
-    driver.save_screenshot("./www.daum.net"+keyword_input+"_관련기사"+str(total[run][0]+1)+"번"+".png")
+    st = ""
+    st += total[run][1][8:]
+    st = st.replace("/", "!")
+    st = st.replace("?", "@")
+    print(st)
+    driver.save_screenshot("./bankimages/"+st+".png")
+
 driver.close()
 print("================================끝===================================")

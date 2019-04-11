@@ -93,7 +93,7 @@ for run in range(len(httplink)):
     st = st.replace("/", "!")
     st = st.replace("?", "@")
     print(st)
-    driver.save_screenshot("./bankimages/"+st+".png")
+    driver.save_screenshot("./wooribank/"+st+".png")
 
 driver.close()
 print("================================끝===================================")
