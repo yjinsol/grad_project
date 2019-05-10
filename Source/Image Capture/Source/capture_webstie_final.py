@@ -117,7 +117,7 @@ open_web()
 request_link()
 html_search_link()
 httplink_save()
-httplink[0] = 'https://www.wooribank.com/'
+#httplink[0] = 'https://www.wooribank.com/'
 save_list = httplink
 url_save()
 link_format()
