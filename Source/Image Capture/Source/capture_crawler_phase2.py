@@ -100,7 +100,10 @@ def link_save_img():
         st = st.replace("/", "!")
         st = st.replace("?", "@")
         print(st)
-        #driver.save_screenshot("./bankimages/"+st+".png")
+        for i in range(10): #같은 url에 대해 새로고침한 10개의 이미지
+            driver.save_screenshot("./test/" + st + ".png")
+            driver.refresh()
+        driver.save_screenshot("./bankimages/"+st+".png")
     del se_st[0]
     print(se_st)
     httplink.clear()
@@ -138,9 +141,6 @@ def second_request():
         print(se_st)
         #se_st.clear()
         link_save_img()
-
-
-
 
 second_request()
 
