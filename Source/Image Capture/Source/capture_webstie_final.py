@@ -43,7 +43,7 @@ def html_search_link(): #html내용을 분류한다.
     link = soup.findAll("a") #html에서 a인것을 찾음
     for item in link:
         site_link.append(item.get("href")) #href를 찾음
-    print(site_link)
+    print('site_link: ' + str(site_link))
 
 def httplink_save(): #분류된 html내용에서 http로 시작하는 링크와 아닌 링크를 구분하여 저장한다.
     global httplink
@@ -54,8 +54,8 @@ def httplink_save(): #분류된 html내용에서 http로 시작하는 링크와 
         else:
             strangelink.append(link)
 
-    print(httplink)
-    print(strangelink)
+    print('httplink: ' + str(httplink))
+    print('strangelink: ' + str(strangelink))
 
 def link_format(): #URL개수 확인과 정렬을 위한 함수
     for cnt in range(len(httplink)):
@@ -72,20 +72,16 @@ def url_save(): #URL을 텍스트 파일에 저장하는 함수
     f.close()
 
 def make_directory(st): #이미지 이름으로 폴더를 생성후 폴더에 이미지를 저장하는 함수
-    dir_path = r"C:\Users\yjs12\PycharmProjects\grad_project\image capture\wooribank_phase2_2"
+    dir_path = r"C:\Users\yjs12\PycharmProjects\grad_project\image capture\kb"
     st = st.replace(":", "%")
     st = st.replace(".", "$")
     file_name = st
+    print(file_name)
     dest_directory = (dir_path + "/" + file_name + "/")
     my_file = Path(dest_directory)
-    if my_file.exists():
-        if os.stat(dest_directory).st_size == 0:
-            return dest_directory
-        else:
-            return "pass"
-    else:
+    if not my_file.exists():
         os.mkdir(dir_path + "/" + file_name + "/")
-        return dest_directory
+    return dest_directory
 
 def link_save_img(): #각각의 URL이미지를 URL이름으로 저장하기 위한 포멧팅과 이미지를 특정경로에 저장하는 함수
     global se_st
@@ -97,14 +93,15 @@ def link_save_img(): #각각의 URL이미지를 URL이름으로 저장하기 위
         se_st.append(total[run][1])
         st = st.replace("/", "!")
         st = st.replace("?", "@")
-        print(str(total[run][0]+1) + ' ' + st)
+        #print(str(total[run][0]+1) + ' ' + st)
 
         dest_directory = make_directory(st)
-        if dest_directory != 'pass':
-            for i in range(20): #같은 url에 대해 새로고침한 10개의 이미지
-                time.sleep(1)
-                driver.save_screenshot(dest_directory + st + "_" + str(i+1)+ ".png")
-                driver.refresh()
+
+        for i in range(20): #같은 url에 대해 새로고침한 10개의 이미지
+            time.sleep(1)
+            driver.save_screenshot(dest_directory + st + "_" + str(i+1)+ ".png")
+            driver.refresh()
+
     del se_st[0]
     print(se_st)
     httplink.clear()
