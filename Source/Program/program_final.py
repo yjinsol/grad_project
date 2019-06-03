@@ -6,53 +6,60 @@ import socket
 import os
 import sys
 
-def url_compare(url):
-
-    #url = 'https://spot.wooribank.com/pot/Dream?withyou=bp' + '\n'
-    f = open(r"C:\Users\yjs12\PycharmProjects\grad_project\dist\program/test.txt", 'r', encoding='UTF8')
-    while 1:
-        k = f.readline()
-        if not k: break
-        if url.replace('#loading', '') + "\n" == k or url + "\n"== k:
-            return "This URL is matching...Starting image comparison"
-    return "There is no match...This is a fake site."
-
 # TCP client example
 # 받은 파일 저장 경로 폴더
 src = r"C:\Users\yjs12\PycharmProjects\grad_project/test/test.png"
+port = 5002
 
-def transfer(img_name):
-    capture_file_name = r"C:\Users\yjs12\PycharmProjects\grad_project\test/" + img_name
-    # 아래에는 저장 코드가 들어가야 한다.
-    # save
+# 서버 연결
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect(("220.67.124.105", port))
 
-    # 3 저장된 파일 보내기
+def transfer(url, img_name):
+    if url:
+        while True:
+            if url:
+                client_socket.send(url.encode())
+            else:
+                continue
+            recv = client_socket.recv(1024).decode()
+            break
+        return recv
 
-    # img 가져오기 보낼 (파일경로/이름)
-    file = open(capture_file_name, "rb")
-    img_size = os.path.getsize(capture_file_name)
-    img = file.read(img_size)  # 저장된 이미
-    file.close()
+    elif img_name:
+        capture_file_name = r"C:\Users\yjs12\PycharmProjects\grad_project\test/" + img_name
+        # 아래에는 저장 코드가 들어가야 한다.
+        # save
 
-    # 서버 연결
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(("220.67.124.105", 5002))
+        # 3 저장된 파일 보내기
 
-    # url 전송
-    client_socket.send(img_name.encode())
-    # 이미지 전송
-    client_socket.sendall(img)
+        # img 가져오기 보낼 (파일경로/이름)
+        file = open(capture_file_name, "rb")
+        img_size = os.path.getsize(capture_file_name)
+        img = file.read(img_size)  # 저장된 이미
+        file.close()
 
+        # 이미지 전송
+        client_socket.sendall(img)
 
-    # 서버와 연결 종료
-    client_socket.close()
-    print("Finish SendAll")
-    #sys.exit()
+        # 서버와 연결 종료 (이미지 보내고 종료)
+        client_socket.close()
+        print("Finish Test Image SendAll\n")
 
+        # 서버 연결
+        resp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        resp_socket.connect(("220.67.124.105", port))
 
+        recv = resp_socket.recv(1024).decode()
+        print("<Image Similarity using tensorflow>")
+        print(recv)
+
+    # 서버와 연결 종료 (이미지 유사도 받은 후 종료)
+    resp_socket.close()
+    print("Finish Similarity ResponseAll\n")
 
 def capture_crawler_user_and_tranfer(url):
-    print("Wait a few seconds....")
+    print("\nWait a few seconds....")
     driver_path = r'C:\Users\yjs12\Downloads\chromedriver.exe'
 
     options = webdriver.ChromeOptions()
@@ -75,7 +82,7 @@ def capture_crawler_user_and_tranfer(url):
     dir_path = r"C:\Users\yjs12\PycharmProjects\grad_project/test/"
     img_name = st + "_" + "test" + ".png"
     driver.save_screenshot(dir_path + img_name)
-    transfer(img_name)
+    transfer(None, img_name)
 
 flag_c = 0
 input = []
@@ -93,8 +100,8 @@ def on_press(key):
 
     if (key_name == 'Key.enter'):
         url = ''.join(input)
-        print(url)
-        url_result = url_compare(url)
+        print("Input URL: " + url)
+        url_result = transfer(url, None)
         print("===>" + url_result + "\n")
         if(url_result == 'This URL is matching...Starting image comparison'):
             capture_crawler_user_and_tranfer(url)
@@ -109,8 +116,8 @@ def on_press(key):
     elif (key_name == 'c' and flag_c == 1):
         time.sleep(0.5)
         url = pyperclip.paste()
-        print(url)
-        url_result = url_compare(url)
+        print("Input URL: " + url)
+        url_result = transfer(url, None)
         print("===>" + url_result)
         if (url_result == 'This URL is matching...Starting image comparison'):
             capture_crawler_user_and_tranfer(url)
