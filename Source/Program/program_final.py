@@ -5,17 +5,21 @@ from selenium import webdriver
 import socket
 import os
 import sys
+import wx
+import base64
+import hashlib
 
 # TCP client example
 # 받은 파일 저장 경로 폴더
-src = r"C:\Users\yjs12\PycharmProjects\grad_project/test/test.png"
+src = r"C:\Users\성윤\PycharmProjects\grad_hsy\test\test.png"
 port = 5002
-
+flag = 0
 # 서버 연결
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect(("220.67.124.105", port))
 
 def transfer(url, img_name):
+    global recv
     if url:
         while True:
             if url:
@@ -27,7 +31,7 @@ def transfer(url, img_name):
         return recv
 
     elif img_name:
-        capture_file_name = r"C:\Users\yjs12\PycharmProjects\grad_project\test/" + img_name
+        capture_file_name = r"C:\Users\성윤\PycharmProjects\grad_hsy\test/" + img_name
         # 아래에는 저장 코드가 들어가야 한다.
         # save
 
@@ -54,13 +58,16 @@ def transfer(url, img_name):
         print("<Image Similarity using tensorflow>")
         print(recv)
 
-    # 서버와 연결 종료 (이미지 유사도 받은 후 종료)
-    resp_socket.close()
-    print("Finish Similarity ResponseAll\n")
+        # 서버와 연결 종료 (이미지 유사도 받은 후 종료)
+        resp_socket.close()
+        print("Finish Similarity ResponseAll\n")
+
+
+
 
 def capture_crawler_user_and_tranfer(url):
     print("\nWait a few seconds....")
-    driver_path = r'C:\Users\yjs12\Downloads\chromedriver.exe'
+    driver_path = r'C:\Users\성윤\Desktop\chromes\chromedriver.exe'
 
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
@@ -79,70 +86,74 @@ def capture_crawler_user_and_tranfer(url):
     st = st.replace("?", "@")
     st = st.replace(":", "%")
     st = st.replace(".", "$")
-    dir_path = r"C:\Users\yjs12\PycharmProjects\grad_project/test/"
+    dir_path = r"C:\Users\성윤\PycharmProjects\grad_hsy\test/"
     img_name = st + "_" + "test" + ".png"
     driver.save_screenshot(dir_path + img_name)
     transfer(None, img_name)
+    global flag
+    flag = 1
 
-flag_c = 0
-input = []
-def get_key_name(key):
-    if isinstance(key, keyboard.KeyCode):
-        return key.char
-    else:
-        return str(key)
+class Frame(wx.Frame):
+    def __init__(self, parent, title):
+        wx.Frame.__init__(self, parent, title=title, size=(500, 250))
+        self.panel = wx.Panel(self)
+        self.Bind(wx.EVT_CLOSE, self.OnCloseWindow)
+
+        # 버튼 생성
+        self.btn = wx.Button(self.panel, -1, 'Compare', (200, 30))
+        self.btn2 = wx.Button(self.panel, -1, 'Close', (200, 175))
+
+        # 텍스트 박스 생성
+        self.txt = wx.TextCtrl(self.panel, -1, size=(150, 20), pos=(170, 0))
+        self.txt.SetValue('input your url')
+
+        # 텍스트 라벨 생성
+        self.some_text = wx.StaticText(self.panel, size=(140, 100), pos=(10, 60))
+        self.some_text.SetLabel('playing')
+
+        # self.some_text2 = wx.StaticText(self.panel, size=(140, 150), pos=(10, 120))
+        # self.some_text2.SetLabel('result')
+
+        # 버튼 클릭 시 이벤트 연결
+        self.Bind(wx.EVT_BUTTON, self.URL_compare, self.btn)
+        self.Bind(wx.EVT_BUTTON, self.OnClose, self.btn2)
+        self.Centre()
+        self.Show()
+        # sizer = wx.BoxSizer(wx.VERTICAL)
+        # sizer.Add(self.btn)
+        # sizer.Add(self.txt)
+        #
+        # self.panel.SetSizer(sizer)
 
 
-def on_press(key):
-    global flag_c
-    key_name = get_key_name(key)
-    #print('Key {} pressed.'.format(key_name))
 
-    if (key_name == 'Key.enter'):
-        url = ''.join(input)
-        print("Input URL: " + url)
+    def URL_compare(self, e):
+        url = self.txt.GetValue()
         url_result = transfer(url, None)
-        print("===>" + url_result + "\n")
-        if(url_result == 'This URL is matching...Starting image comparison'):
-            capture_crawler_user_and_tranfer(url)
-            print("Press 'Esc' to exit the program.")
-        input.clear()
-        #sys.exit()
-    elif (key_name == 'Key.backspace'):
-        if len(input) > 0:
-            input.remove(input[-1])
-    elif (key_name == 'Key.ctrl_l'):
-        flag_c = 1
-    elif (key_name == 'c' and flag_c == 1):
-        time.sleep(0.5)
-        url = pyperclip.paste()
-        print("Input URL: " + url)
-        url_result = transfer(url, None)
-        print("===>" + url_result)
+        self.enc = url_result + "\n"
+        self.some_text.SetLabel(self.enc)
         if (url_result == 'This URL is matching...Starting image comparison'):
             capture_crawler_user_and_tranfer(url)
-            print("Press 'Esc' to exit the program.")
-        flag_c = 0
-    elif (key_name == 'a' and flag_c == 1):
-        flag_c = 0
-        pass
-    else:
-        input.append(key_name)
+            self.fin = recv + "\nThis window will turn off after 5 seconds."
+            self.some_text.SetLabel(self.fin)
+            time.sleep(5)
+            self.OnClose(None)
 
+    def OnClose(self, event):
+        global flag
+        if flag == 0:
+            client_socket.send(''.encode())
+        self.Close(True)
 
-def on_release(key):
-    key_name = get_key_name(key)
-    #print('Key {} released.'.format(key_name))
+    def OnCloseWindow(self, e):
+        global flag
+        if flag == 0:
+            client_socket.send(''.encode())
+        self.Destroy()
 
-    if key_name == 'Key.esc':
-        print('Exiting...')
-        return False
-
-with keyboard.Listener(
-        on_press=on_press,
-        on_release=on_release) as listener:
-    listener.join()
-
+app = wx.App()
+frame = Frame(None, 'test_window')
+app.MainLoop()
 
 
 
