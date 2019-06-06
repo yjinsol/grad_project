@@ -12,7 +12,7 @@ import hashlib
 # TCP client example
 # 받은 파일 저장 경로 폴더
 src = r"C:\Users\성윤\PycharmProjects\grad_hsy\test\test.png"
-port = 5002
+port = 5003
 flag = 0
 # 서버 연결
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -88,6 +88,8 @@ def capture_crawler_user_and_tranfer(url):
     st = st.replace(".", "$")
     dir_path = r"C:\Users\성윤\PycharmProjects\grad_hsy\test/"
     img_name = st + "_" + "test" + ".png"
+    driver.refresh()
+    time.sleep(1)
     driver.save_screenshot(dir_path + img_name)
     transfer(None, img_name)
     global flag
@@ -105,11 +107,11 @@ class Frame(wx.Frame):
 
         # 텍스트 박스 생성
         self.txt = wx.TextCtrl(self.panel, -1, size=(150, 20), pos=(170, 0))
-        self.txt.SetValue('input your url')
+        self.txt.SetValue('Input your url')
 
         # 텍스트 라벨 생성
-        self.some_text = wx.StaticText(self.panel, size=(140, 100), pos=(10, 60))
-        self.some_text.SetLabel('playing')
+        self.some_text = wx.StaticText(self.panel, size=(140, 110), pos=(10, 60))
+        self.some_text.SetLabel('Waiting')
 
         # self.some_text2 = wx.StaticText(self.panel, size=(140, 150), pos=(10, 120))
         # self.some_text2.SetLabel('result')
@@ -134,10 +136,10 @@ class Frame(wx.Frame):
         self.some_text.SetLabel(self.enc)
         if (url_result == 'This URL is matching...Starting image comparison'):
             capture_crawler_user_and_tranfer(url)
-            self.fin = recv + "\nThis window will turn off after 5 seconds."
-            self.some_text.SetLabel(self.fin)
-            time.sleep(5)
-            self.OnClose(None)
+            self.fin = recv
+            self.some_text.SetLabel(recv)
+            # time.sleep(5)
+            # self.OnClose(None)
 
     def OnClose(self, event):
         global flag
@@ -152,7 +154,7 @@ class Frame(wx.Frame):
         self.Destroy()
 
 app = wx.App()
-frame = Frame(None, 'test_window')
+frame = Frame(None, 'HufsDetector')
 app.MainLoop()
 
 
