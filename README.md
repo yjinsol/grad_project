@@ -10,9 +10,9 @@
 >
 > 2) 서버에서는 프로그램으로부터 받은 URL이 이전에 미리 저장해둔 Original URL list에 있는지 확인한다.
 >
->   2-1) Original URL list에 없는 URL이라면, 프로그램을 통해 Fake site라는 결과를 User에게 보여준다.
+> 2-1) Original URL list에 없는 URL이라면, 프로그램을 통해 Fake site라는 결과를 User에게 보여준다.
 >
->   2-2) Original URL list에 있는 URL이라면, 서버는 프로그램으로 이미지를 요청하고 프로그램은 User가 접속해 있는 사이트의 이미지를 캡쳐하여 서버로 전송한다. (3으로 이동)
+> 2-2) Original URL list에 있는 URL이라면, 서버는 프로그램으로 이미지를 요청하고 프로그램은 User가 접속해 있는 사이트의 이미지를 캡쳐하여 서버로 전송한다. (3으로 이동)
 >
 > 3) 프로그램으로부터 받은 이미지로 Tensorflow 기반 Inception v3를 이용한 이미지 비교와 ImageHash 비교 기법을 이용하여 이미지 유사도 비교를 수행한다.
 >
