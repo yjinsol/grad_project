@@ -6,7 +6,8 @@ import numpy as np
 import tensorflow as tf
 
 
-imagePath = r'/home/usergpu2/kbbank_recv_img/test.png'                                      # 추론을 진행할 이미지 경로
+#imagePath = r'/home/usergpu2/kbbank_recv_img/test.png'                                      # 추론을 진행할 이미지 경로
+imagePath = r'momomomo.png'
 #imagePath = ''
 modelFullPath = r'/home/usergpu2/kbbank_label/output_graph.pb'                                      # 읽어들일 graph 파일 경로
 labelsFullPath = r'/home/usergpu2/kbbank_label/output_labels.txt'                                   # 읽어들일 labels 파일 경로

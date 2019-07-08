@@ -10,8 +10,7 @@ import base64
 import hashlib
 
 # TCP client example
-# 받은 파일 저장 경로 폴더
-src = r"C:\Users\성윤\PycharmProjects\grad_hsy\test\test.png"
+
 port = 5003
 flag = 0
 # 서버 연결
@@ -31,7 +30,8 @@ def transfer(url, img_name):
         return recv
 
     elif img_name:
-        capture_file_name = r"C:\Users\성윤\PycharmProjects\grad_hsy\test/" + img_name
+        capture_file_name = r"/home/usergpu2/PycharmProjects/untitled4/user_image/" + img_name
+        #capture_file_name = r"/home/usergpu2/바탕화면/rcv_img/otalk$kbstar$com!quics@page=omember&QSL=F#loading_test.png"
         # 아래에는 저장 코드가 들어가야 한다.
         # save
 
@@ -67,7 +67,7 @@ def transfer(url, img_name):
 
 def capture_crawler_user_and_tranfer(url):
     print("\nWait a few seconds....")
-    driver_path = r'C:\Users\성윤\Desktop\chromes\chromedriver.exe'
+    driver_path = r'/home/usergpu2/chrome/chromedriver'
 
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
@@ -86,7 +86,7 @@ def capture_crawler_user_and_tranfer(url):
     st = st.replace("?", "@")
     st = st.replace(":", "%")
     st = st.replace(".", "$")
-    dir_path = r"C:\Users\성윤\PycharmProjects\grad_hsy\test/"
+    dir_path = r"/home/usergpu2/PycharmProjects/untitled4/user_image/"
     img_name = st + "_" + "test" + ".png"
     driver.refresh()
     time.sleep(1)
@@ -138,6 +138,7 @@ class Frame(wx.Frame):
             capture_crawler_user_and_tranfer(url)
             self.fin = recv
             self.some_text.SetLabel(recv)
+
             # time.sleep(5)
             # self.OnClose(None)
 

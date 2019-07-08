@@ -171,7 +171,15 @@ def create_image_lists(image_dir, testing_percentage, validation_percentage):
         'testing': testing_images,
         'validation': validation_images,
     }
+    # make sure none of the list is empty, otherwise it will raise an error
+    # when validating / testing
+    if validation_percentage > 0 and not validation_images:
+        validation_images.append(training_images.pop())
+    if testing_percentage > 0 and not testing_images:
+        testing_images.append(training_images.pop())
+
   return result
+
 
 
 def get_image_path(image_lists, label_name, index, image_dir, category):
@@ -198,11 +206,16 @@ def get_image_path(image_lists, label_name, index, image_dir, category):
   if not category_list:
     tf.logging.fatal('Label %s has no images in the category %s.',
                      label_name, category)
-  mod_index = index % len(category_list)
-  base_name = category_list[mod_index]
-  sub_dir = label_lists['dir']
-  full_path = os.path.join(image_dir, sub_dir, base_name)
-  return full_path
+  try:
+    mod_index = index % len(category_list)
+  except ZeroDivisionError:
+    print("Error\n")
+
+  else:
+    base_name = category_list[mod_index]
+    sub_dir = label_lists['dir']
+    full_path = os.path.join(image_dir, sub_dir, base_name)
+    return full_path
 
 
 def get_bottleneck_path(image_lists, label_name, index, bottleneck_dir,
@@ -221,6 +234,7 @@ def get_bottleneck_path(image_lists, label_name, index, bottleneck_dir,
   Returns:
     File system path string to an image that meets the requested parameters.
   """
+
   return get_image_path(image_lists, label_name, index, bottleneck_dir,
                         category) + '.txt'
 
@@ -778,7 +792,7 @@ def add_evaluation_step(result_tensor, ground_truth_tensor):
 
 def main(_):
   # TensorBoard의 summaries를 write할 directory를 설정한다.
-  FLAGS.image_dir = r"/home/usergpu2/kbbank2"
+  FLAGS.image_dir = r"/home/usergpu2/test"
   if tf.gfile.Exists(FLAGS.summaries_dir):
     tf.gfile.DeleteRecursively(FLAGS.summaries_dir)
   tf.gfile.MakeDirs(FLAGS.summaries_dir)
@@ -954,7 +968,7 @@ if __name__ == '__main__':
   parser.add_argument(
       '--how_many_training_steps',
       type=int,
-      default=1000,
+      default=20000,
       help='How many training steps to run before ending.'
   )
   parser.add_argument(
